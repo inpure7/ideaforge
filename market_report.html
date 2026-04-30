@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시장/전략 상세 — IdeaForge</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #020817; color: #f1f5f9; max-width: 980px; margin: 0 auto; padding: 2rem; }
+  a { color:#60a5fa; text-decoration:none; }
+  a:hover { text-decoration: underline; }
+  h1 { font-size: 1.7rem; margin-bottom: 0.3rem; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .sub { color:#475569; margin-bottom: 1.1rem; font-size: 0.92rem; line-height: 1.4; }
+  .nav { display:flex; gap:0.5rem; flex-wrap:wrap; margin: 0.8rem 0 1.2rem; }
+  .nav a { background:#0f172a; border:1px solid #1e293b; padding:0.4rem 0.6rem; border-radius:10px; font-size:0.82rem; }
+  .card { background:#0f172a; border:1px solid #1e293b; border-radius:16px; padding:1.1rem 1.3rem; margin-bottom:0.8rem; }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:0.8rem; }
+  .kpi { display:flex; gap:0.9rem; flex-wrap:wrap; align-items:flex-end; }
+  .pill { display:inline-block; background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:0.25rem 0.55rem; border-radius:999px; font-size:0.78rem; }
+  .score { font-size:2rem; font-weight:900; letter-spacing:-0.02em; }
+  .muted { color:#94a3b8; }
+  ul { padding-left: 1.2rem; color:#cbd5e1; line-height:1.75; }
+  code { background:#1e293b; padding:0.12rem 0.35rem; border-radius:6px; font-size:0.82rem; }
+  table { width:100%; border-collapse: collapse; }
+  th, td { border-bottom:1px solid #1e293b; text-align:left; padding:0.55rem 0.4rem; vertical-align: top; }
+  th { font-size:0.78rem; color:#64748b; text-transform: uppercase; letter-spacing:0.08em; }
+  .tag { display:inline-block; background:#1e293b; border-radius:8px; padding:0.25rem 0.55rem; font-size:0.78rem; margin: 0.15rem; color:#cbd5e1; border:1px solid #334155; }
+  .check { display:flex; align-items:flex-start; gap:0.55rem; padding:0.45rem 0; border-bottom:1px dashed #1e293b; }
+  .dot { width:10px; height:10px; border-radius:999px; margin-top:0.35rem; flex:0 0 auto; }
+  .dot.pass { background:#10b981; }
+  .dot.warn { background:#f59e0b; }
+  .dot.fail { background:#ef4444; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+  <h1>⚡ IdeaForge</h1>
+  <div class="sub">IdeaForge · 아이디어 씨앗을 검증된 사업계획으로 키워주는 AI 창업 코파일럿</div>
+  <div class="nav">
+    <a href="index.html">요약</a>
+    <a href="patent_report.html">특허 상세</a>
+    <a href="market_report.html">시장/전략 상세</a>
+    <a href="plan_report.html">기획서</a>
+    <a href="qa_report.html">QA</a>
+    <a href="mvp.html" target="_blank">MVP 목업</a>
+  </div>
+  
+    <div class="card">
+      <div class="muted" style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">시장 요약</div>
+      <div style="margin-top:0.45rem">
+        <span class="pill">market_size: N/A</span>
+        <span class="pill">growth: </span>
+      </div>
+      <div style="margin-top:0.8rem;color:#cbd5e1;line-height:1.75">{
+  "market_size": "$12.4B",
+  "growth_rate": "18.7% CAGR (2024~2030)",
+  "competitors": [
+    {
+      "name": "Y Combinator",
+      "description": "세계 최대 스타트업 액셀러레이터, 배치 프로그램 기반 아이디어 검증 및 투자",
+      "strength": "강력한 네트워크, 브랜드 신뢰도, 풍부한 졸업생 생태계",
+      "weakness": "배치 합격률 1~2% 미만, 오프라인 중심, 초기 아이디어 단계 지원 부족"
+    },
+    {
+      "name": "Notion AI + 스타트업 템플릿 생태계",
+      "description": "아이디어 문서화 및 린캔버스 작성 도구로 활용되는 협업 플랫폼",
+      "strength": "광범위한 사용자층, 유연한 커스터마이징, 낮은 진입 장벽",
+      "weakness": "아이디어 검증 기능 부재, 시장 분석 자동화 없음, 단순 문서 도구에 머무름"
+    },
+    {
+      "name": "Ideaflip",
+      "description": "팀 브레인스토밍 및 아이디어 시각화 전문 SaaS 플랫폼",
+      "strength": "직관적인 UI, 실시간 협업, 아이디어 카테고리화 기능",
+      "weakness": "시장 검증 기능 없음, 개인 창업자보다 기업 팀 중심, 한국 시장 미진출"
+    },
+    {
+      "name": "Lean Canvas (Leanstack)",
+      "description": "린 스타트업 방법론 기반 비즈니스 모델 설계 및 아이디어 검증 플랫폼",
+      "strength": "검증된 프레임워크, 교육 콘텐츠 연동, 스타트업 생태계 내 인지도",
+      "weakness": "프레임워크가 고정적, AI 자동화 미흡, 커뮤니티 기능 약함"
+    },
+    {
+      "name": "500 Startups",
+      "description": "글로벌 마이크로 VC 겸 액셀러레이터, 아이디어~시드 단계 집중 지원",
+      "strength": "글로벌 네트워크, 다양한 산업군 포트폴리오, 멘토링 프로그램",
+      "weakness": "자본 투자 중심, 아이디어 단계 접근성 낮음, 온라인 플랫폼 역량 부족"
+    },
+    {
+      "name": "ChatGPT / Claude (AI 기반 아이디어 검토)",
+      "description": "범용 AI로 아이디어 브레인스토밍, 시장 분석 초안 작성에 활용",
+      "strength": "즉시 접근 가능, 광범위한 지식, 저비용",
+      "weakness": "맞춤형 인큐베이팅 프로세스 없음, 실행 로드맵 부재, 사용자 아이디어 축적·학습 불가"
+    }
+  ],
+  "trends": [
+    "AI 기반 아이디어 검증 자동화 수요 급증 — 창업자들이 MVP 전 단계에서 AI 피드백을 원함",
+    "1인 창업자(Solo Founder) 증가 — 팀 없이 혼자 아이디어를 발전시키는 인구 급증",
+    "린 스타트업 방법론의 대중화 — 빠른 검증 사이클을 위한 구조화된 도구 수요 증가",
+    "크리에이터 이코노미 확장 — 아이디어를 수익화하려는 비개발자 창업 시도 증가",
+    "No-code/Low-code 환경 성숙 — 기술 없이도 아이디어를 빠르게 프로토타이핑 가능",
+    "커뮤니티 기반 스타트업 생태계 성장 — 동료 창업자 간 피드백 교환 플랫폼 수요 증가",
+    "사이드 프로젝트 문화 확산 — 직장인 창업 준비자들의 구조화된 아이디어 관리 필요성 대두"
+  ],
+  "opportunities": [
+    "AI를 활용한 실시간 시장성 검증 리포트 자동 생성 — 수작업 리서치를 대체하는 핵심 기능",
+    "한국 스타트업 생태계 내 초기 단계 지원 플랫폼 공백 — YC 같은 글로벌 플랫폼의 한국어 서비스 부재",
+    "아이디어 → 린캔버스 → MVP 스펙까지 원스톱 가이드 제공으로 이탈률 감소",
+    "기업 내부 이노베이션 팀(사내벤처) 대상 B2B 확장 기회",
+    "아이디어 라이브러리 커뮤니티화 — 검증된 아이디어 공유/거래 마켓플레이스로 확장 가능",
+    "대학교 창업지원단, 정부 창업 프로그램과 연계한 공공 B2B 채널 확보 가능",
+    "글로벌 Solo Founder 커뮤니티(Indie Hackers 등)와 연계한 영어권 시장 진출"
+  ],
+  "threats": [
+    "ChatGPT, Claude 등 범용 AI의 기능 고도화로 인한 단순 아이디어 분석 기능 대체 위험",
+    "YC, 스파크랩 등 기존 액셀러레이터의 디지털 플랫폼 강화 시 경쟁 격화",
+    "사용자 아이디어 데이터 보안 우려 — 창업 아이디어 유출에 대한 민감도 높음",
+    "무료 대안(Notion, 구글 독스 + AI) 대비 유료 전환 설득력 확보 어려움",
+    "스타트업 투자 시장 위축 시 잠재 사용자(예비 창업자) 감소 가능성",
+    "아이디어 품질 판단 AI의 신뢰성 문제 — 잘못된 검증 결과로 인한 사용자 신뢰 손상 위험"
+  ],
+  "business_models": [
+    "Freemium SaaS 구독 (월정액 개인/팀 플랜)",
+    "B2B 엔터프라이즈 라이선스 (기업 이노베이션팀, 대학 창업지원단)",
+    "아이디어 검증 리포트 단건 결제 (Pay-per-report)",
+    "아이디어 마켓플레이스 거래 수수료",
+    "멘토·전문가 연결 중개 수수료",
+    "정부 창업 프로그램 연계 B2G 계약"
+  ],
+  "target_segments": [
+    "예비 창업자 (직장인 사이드 프로젝트, 대학생 창업 준비자)",
+    "1인 창업자 (Solo Founder, Indie Hacker)",
+    "스타트업 초기 팀 (아이디어 단계 ~ Pre-seed)",
+    "기업 내 이노베이션/사내벤처 팀",
+    "대학교 창업지원센터 및 창업 교육 기관",
+    "정부 지원 창업 프로그램 참여자 (중소벤처기업부, 창진원 등)"
+  ],
+  "positioning": {
+    "category": "AI 기반 아이디어 인큐베이팅 플랫폼",
+    "value_prop": "아이디어 씨앗을 검증된 사업 계획으로 키워주는 AI 코파일럿 — 브레인스토밍부터 MVP 스펙까지 원스톱",
+    "why_now": "AI 기술 성숙 + 1인 창업자 급증 + 기존 액셀러레이터의 접근성 한계가 동시에 교차하는 시점. 누구나 YC 수준의 아이디어 코칭을 받을 수 있는 민주화 기회",
+    "differentiation": [
+      "범용 AI가 아닌 '창업 아이디어 전용' 검증 프레임워크 내장 (린캔버스, SWOT, TAM/SAM/SOM 자동 생성)",
+      "아이디어 → 시장 분석 → 린캔버스 → MVP 로드맵까지 단계별 가이드 제공",
+      "커뮤니티 피어 리뷰 시스템으로 AI 단독 검증의 한계를 보완",
+      "아이디어 버전 관리 및 히스토리 추적 기능 (아이디어 진화 과정 시각화)",
+      "한국어 특화 + 국내 시장 데이터 연동으로 로컬 맥락 반영"
+    ]
+  },
+  "strategy": {
+    "pricing": {
+      "model": "Freemium + 월정액 구독 + 단건 결제 혼합",
+      "starter": "$0 (무료 — 월 3개 아이디어, 기본 분석)",
+      "pro": "$19/월 (무료 무제한 아이디어, 전체 AI 분석 리포트, 린캔버스 자동 생성, 커뮤니티 피어 리뷰)",
+      "enterprise": "협의 (팀 10인 이상, 사내벤처/대학 창업지원단 전용 대시보드, API 연동</div>
+    </div>
+    <div class="card">
+      <div class="muted" style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">포지셔닝</div>
+      <ul style="margin-top:0.45rem">
+        <li><strong>카테고리</strong>: </li>
+        <li><strong>핵심 가치</strong>: </li>
+        <li><strong>Why now</strong>: </li>
+      </ul>
+      <div class="muted" style="margin-top:0.6rem">차별점</div>
+      <ul style="margin-top:0.35rem"><li>없음</li></ul>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="muted" style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">가격 전략</div>
+        <ul style="margin-top:0.45rem">
+          <li><strong>모델</strong>: </li>
+          <li><strong>Starter</strong>: </li>
+          <li><strong>Pro</strong>: </li>
+          <li><strong>Enterprise</strong>: </li>
+          <li><strong>근거</strong>: </li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="muted" style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">GTM</div>
+        <ul style="margin-top:0.45rem">
+          <li><strong>초기 공략</strong>: </li>
+          <li><strong>Wedge</strong>: </li>
+          <li><strong>메시지</strong>: </li>
+          <li><strong>모션</strong>: </li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="muted" style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">채널/전술</div>
+      <table style="margin-top:0.4rem">
+        <thead><tr><th>채널</th><th>전술</th><th>기대 신호</th></tr></thead>
+        <tbody><tr><td colspan='3' class='muted'>없음</td></tr></tbody>
+      </table>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="muted" style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">KPI</div>
+        <ul style="margin-top:0.45rem"><li>없음</li></ul>
+      </div>
+      <div class="card">
+        <div class="muted" style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">실행 플랜</div>
+        <div class="muted" style="margin-top:0.45rem">30일</div>
+        <ul><li>없음</li></ul>
+        <div class="muted" style="margin-top:0.6rem">90일</div>
+        <ul><li>없음</li></ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="muted" style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">근거(검색 요약)</div>
+      <ul style="margin-top:0.45rem"><li>없음</li></ul>
+    </div>
+    
+</body>
+</html>
