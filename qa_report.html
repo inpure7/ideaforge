@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA — IdeaForge</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #020817; color: #f1f5f9; max-width: 980px; margin: 0 auto; padding: 2rem; }
+  a { color:#60a5fa; text-decoration:none; }
+  a:hover { text-decoration: underline; }
+  h1 { font-size: 1.7rem; margin-bottom: 0.3rem; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .sub { color:#475569; margin-bottom: 1.1rem; font-size: 0.92rem; line-height: 1.4; }
+  .nav { display:flex; gap:0.5rem; flex-wrap:wrap; margin: 0.8rem 0 1.2rem; }
+  .nav a { background:#0f172a; border:1px solid #1e293b; padding:0.4rem 0.6rem; border-radius:10px; font-size:0.82rem; }
+  .card { background:#0f172a; border:1px solid #1e293b; border-radius:16px; padding:1.1rem 1.3rem; margin-bottom:0.8rem; }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:0.8rem; }
+  .kpi { display:flex; gap:0.9rem; flex-wrap:wrap; align-items:flex-end; }
+  .pill { display:inline-block; background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:0.25rem 0.55rem; border-radius:999px; font-size:0.78rem; }
+  .score { font-size:2rem; font-weight:900; letter-spacing:-0.02em; }
+  .muted { color:#94a3b8; }
+  ul { padding-left: 1.2rem; color:#cbd5e1; line-height:1.75; }
+  code { background:#1e293b; padding:0.12rem 0.35rem; border-radius:6px; font-size:0.82rem; }
+  table { width:100%; border-collapse: collapse; }
+  th, td { border-bottom:1px solid #1e293b; text-align:left; padding:0.55rem 0.4rem; vertical-align: top; }
+  th { font-size:0.78rem; color:#64748b; text-transform: uppercase; letter-spacing:0.08em; }
+  .tag { display:inline-block; background:#1e293b; border-radius:8px; padding:0.25rem 0.55rem; font-size:0.78rem; margin: 0.15rem; color:#cbd5e1; border:1px solid #334155; }
+  .check { display:flex; align-items:flex-start; gap:0.55rem; padding:0.45rem 0; border-bottom:1px dashed #1e293b; }
+  .dot { width:10px; height:10px; border-radius:999px; margin-top:0.35rem; flex:0 0 auto; }
+  .dot.pass { background:#10b981; }
+  .dot.warn { background:#f59e0b; }
+  .dot.fail { background:#ef4444; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+  <h1>⚡ IdeaForge</h1>
+  <div class="sub">IdeaForge · 아이디어 씨앗을 검증된 사업계획으로 키워주는 AI 창업 코파일럿</div>
+  <div class="nav">
+    <a href="index.html">요약</a>
+    <a href="patent_report.html">특허 상세</a>
+    <a href="market_report.html">시장/전략 상세</a>
+    <a href="plan_report.html">기획서</a>
+    <a href="qa_report.html">QA</a>
+    <a href="mvp.html" target="_blank">MVP 목업</a>
+  </div>
+  
+    <div class="card">
+      <div class="muted" style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">QA 요약</div>
+      <div style="margin-top:0.45rem">
+        <span class="pill">score: 50/100</span>
+        <span class="pill">passed: false</span>
+      </div>
+      <div style="margin-top:0.8rem;color:#cbd5e1;line-height:1.75">```json
+{
+  "score": 62,
+  "passed": false,
+  "issues": [
+    {
+      "severity": "high",
+      "category": "기능",
+      "file": "index.html",
+      "description": "HTML이 중간에 잘려 있어 전체 코드를 검토할 수 없음. grid grid-cols-2 lg:grid-cols-4 gap 이후 내용 누락",
+      "suggestion": "전체 HTML 코드를 제출하여 완전한 검토가 가능하도록 해야 함"
+    },
+    {
+      "severity": "high",
+      "category": "기능",
+      "file": "index.html",
+      "description": "switchTab(), openNewIdeaModal(), filterIdeas(), showToast() 등 핵심 JavaScript 함수들이 HTML 내에 구현되어 있는지 확인 불가 (코드 누락으로 인해)",
+      "suggestion": "모든 JS 함수 구현을 완성하고, 탭 전환 시 display 속성 제어 로직을 명확히 구현할 것"
+    },
+    {
+      "severity": "high",
+      "category": "접근성",
+      "file": "index.html",
+      "description": "사이드바 nav 버튼들에 aria-current, aria-label이 없고, 이모지를 텍스트 대체 없이 아이콘으로 사용 중 (스크린리더 호환 불가)",
+      "suggestion": "활성 탭에 aria-current='page' 추가, 이모지 span에 aria-hidden='true' 및 시각적으로 숨겨진 텍스트 제공"
+    },
+    {
+      "severity": "high",
+      "category": "접근성",
+      "file": "index.html",
+      "description": "사용자 아바타 img 태그에 alt 속성이 없음 (접근성 위반)",
+      "suggestion": "<img alt='김창업 프로필 사진'> 추가"
+    },
+    {
+      "severity": "high",
+      "category": "접근성",
+      "file": "index.html",
+      "description": "알림 버튼 div가 button 태그가 아닌 div로 구현되어 있어 키보드 접근 불가",
+      "suggestion": "div를 button 태그로 변경하고 적절한 aria-label 추가 (예: aria-label='알림 보기')"
+    },
+    {
+      "severity": "medium",
+      "category": "접근성",
+      "file": "index.html",
+      "description": "전역 검색 input에 label 태그가 없고 placeholder만 사용 중. 스크린리더가 목적을 파악하기 어려움",
+      "suggestion": "aria-label='아이디어 검색' 또는 시각적으로 숨긴 label 추가"
+    },
+    {
+      "severity": "medium",
+      "category": "접근성",
+      "file": "index.html",
+      "description": "pulse-dot(녹색 점)이 순수 시각적 장식으로만 표현되어 상태 정보를 스크린리더에 전달하지 못함",
+      "suggestion": "aria-label='온라인' 또는 role='status'와 함께 숨겨진 텍스트로 상태 전달"
+    },
+    {
+      "severity": "medium",
+      "category": "UX",
+      "file": "index.html",
+      "description": "린 캔버스와 MVP 로드맵 탭 아이콘이 모두 🗺️로 동일하여 시각적 구분이 어려움",
+      "suggestion": "MVP 로드맵은 🛣️ 또는 📋 등 다른 이모지 사용으로 차별화"
+    },
+    {
+      "severity": "medium",
+      "category": "UX",
+      "file": "index.html",
+      "description": "모바일에서 사이드바가 고정 너비(w-64)로 표시되어 좁은 화면에서 메인 컨텐츠 영역이 심각하게 축소됨. 햄버거 메뉴 미구현",
+      "suggestion": "모바일 브레이크포인트에서 사이드바를 오버레이 드로어로 전환하는 햄버거 메뉴 구현"
+    },
+    {
+      "severity": "medium",
+      "category": "UX",
+      "file": "index.html",
+      "description": "헤더 검색창이 hidden md:block으로 모바일에서 숨겨지지만 대체 검색 UI가 없음",
+      "suggestion": "모바일에서 검색 아이콘 버튼을 표시하고 탭하면 전체화면 검색 오버레이 제공"
+    },
+    {
+      "severity": "medium",
+      "category": "성능",
+      "file": "index.html",
+      "description": "Tailwind CDN 방식은 프로덕션 환경에 부적합하며, 전체 CSS를 런타임에 파싱하여 초기 로딩 지연 발생",
+      "suggestion": "Tailwind CLI 또는 PostCSS로 빌드 단계에서 purge 처리된 최적화된 CSS 사용"
+    },
+    {
+      "severity": "medium",
+      "category": "성능",
+      "file": "index.html",
+      "description": "Chart.js를 CDN으로 로드하나 defer/async 속성 없이 렌더링 블로킹 발생 가능",
+      "suggestion": "<script src='...' defer> 또는 async 속성 추가, 또는 필요 탭에서 동적 로드"
+    },
+    {
+      "severity": "medium",
+      "category": "코드",
+      "file": "index.html",
+      "description": "nav-active 클래스가 JavaScript로만 토글되는 것으로 보이나 초기 상태가 HTML에 하드코딩되어 있고, JS 함수 구현이 불완전하게 제공됨",
+      "suggestion": "switchTab 함수에서 모든 nav 버튼의 active 클래스를 일괄 제거 후 대상 버튼에만 추가하는 로직 명확히 구현"
+    },
+    {
+      "severity": "low",
+      "category": "UX",
+      "file": "index.html",
+      "description": "내 아이디어 탭 배지의 숫자(5)가 하드코딩되어 동적 데이터와 동기화되지 않을 수 있음",
+      "suggestion": "JS로 아이디어 배열 길이를 읽어 동적으로 배지 숫자 업데이트"
+    },
+    {
+      "severity": "low",
+      "category": "접근성",
+      "file": "index.html",
+      "description": "input, textarea에 background를 !important로 강제 지정하여 OS 고대비 모드 등 사용자 정의 스타일 재정의 차단",
+      "suggestion": "!important 제거 후 구체적인 선택자로 스타일 우선순위 조정"
+    },
+    {
+      "severity": "low",
+      "category": "코드",
+      "file": "index.html",
+      "description": "tailwind.config 스크립트에서 dark 색상 팔레트를 정의했으나 실제 HTML에서 dark-* 유틸리티 클래스 사용이 확인되지 않음",
+      "suggestion": "사용하지 않는 커스텀 컬러 설정 제거하거나 실제 컴포넌트에 적용"
+    },
+    {
+      "severity": "low",
+      "category": "UX",
+      "file": "index.html",
+      "description": "알림 뱃지(핑크 점)가 항상 표시되지만 showToast에서 '알림이 없습니다'를 출력하는 로직과 불일치",
+      "suggestion": "알림이 없을 때 뱃지를 숨기거나, 알림 목록 팝오버로 연결하는 일관된 UX 구현"
+    }
+  ],
+  "checklist": [
+    {
+      "item": "모든 탭 콘텐츠가 정상적으로 렌더링되는가",
+      "status": "fail",
+      "notes": "HTML 코드가 잘려 있어 dashboard 탭 이후 내용 검토 불가"
+    },
+    {
+      "item": "탭 전환 기능(switchTab)이 올바르게 동작하는가",
+      "status": "warn",
+      "notes": "함수 선언은 확인되나 구현부가 제출된 코드에 없어 동작 여부 불확실"
+    },
+    {
+      "item": "새 아이디어 모달이 열리고 닫히는가",
+      "status": "warn",
+      "notes": "openNewIdeaModal() 호출부는 있으나 구현 코드 미확인"
+    },
+    {
+      "item": "전역 검색 필터링이 동작하는가",
+      "status": "warn",
+      "notes": "filterIdeas() 호출은 있으나 구현부 미확인"
+    },
+    {
+      "item": "Toast 알림이 정상 출력되고 자동 소멸되는가",
+      "status": "warn",
+      "notes": "showToast() 호출은 있으나 구현부와 toastContainer 활용 로직 미확인"
+    },
+    {
+      "item": "모바일 반응형 레이아웃 지원 여부",
+      "status": "fail",
+      "notes": "사이드바가 모바일에서 고정 w-64로 렌더링되어 레이아웃 붕괴 가능, 햄버거 메뉴 없음"
+    },
+    {
+      "item": "이미지 alt 속성 제공 여부",
+      "status": "fail",
+      "notes": "아바타 img에 alt 속성 없음"
+    },
+    {
+      "item": "버튼/인터랙티브 요소의 키보드 접근성",
+      "status": "fail",
+      "notes": "알림 div가 button이 아닌 div로 구현, 키보드 접근 불가"
+    },
+    {
+      "item": "색상 대비 (WCAG AA 기준)",
+      "status": "warn",
+      "notes": "dark 배경에 gray-400, gray-500 텍스트 사용 구간에서 4.5:1 미달 가능성 있음, 정밀 측정 필요"
+    },
+    {
+      "item": "aria-label 및 역할(role) 속성 적절히 사용",
+      "status": "fail",
+      "notes": "nav 버튼에 aria-current 없음, 검색 input에 label/aria-label 없음"
+    },
+    {
+      "item": "폰트 및 아이콘 로딩 (Google Fonts)",
+      "status": "pass",
+      "notes": "Inter 폰트 Google Fonts에서 정상 임포트, 이모지 아이콘 시스템 폰트로 폴백 가능"
+    },
+    {
+      "item": "CSS 애니메이션(pulse, slideIn) 정상 동작 가능 여부",
+      "status": "pass",
+      "notes": "keyframes 정의 및 클래스 적용 올바름, prefers-reduced-motion 미지원은 개선 필요"
+    },
+    {
+      "item": "Tailwind 다크모드 설정 일관성",
+      "status": "warn",
+      "notes": "html 태그에 dark 클래스 하드코딩, 사용자 토글 기능 없음. 시스템 설정 감지 미지원"
+    },
+    {
+      "item": "외부 라이브러리 로딩 최적화",
+      "status": "fail",
+      "notes": "Tailwind CDN 및 Chart.js CDN이 defer/async 없이 동기 로드되어 렌더링 블로킹 위험"
+    },
+    {
+      "item": "스크롤바 커스텀 스타일 브라우저 호환성",
+      "status": "warn",
+      "notes": "::-webkit-scrollbar는 Firefox 미지원, scrollbar-width/scrollbar-color 추가 권장"
+    },
+    {
+      "item": "사용자 아바타 외부 API 의존성",
+      "status": "warn",
+      "notes": "dicebear API 사용, 네트워크 오프라인 시 아바타 미표시. fallback UI 없음"
+    }
+  ],
+  "test_cases": [
+    {
+      "name": "탭 전환 기능 검증",
+      "steps": [
+        "사이드바에서 '내 아이디어' 버튼 클릭",
+        "대시보드 탭이 숨겨지고 아이디어 탭 콘텐츠가 표시되는지 확인",
+        "활성 버튼에 nav-active 클래스가 추가되고 이전 버튼에서 제거되는지 확인",
+        "다시 '대시보드' 클릭하여 원래 탭으로 복귀 확인"
+      ],
+      "expected": "탭 전환 시 해당 콘텐츠만 표시되고, 사이드바 활성 상태가 정확히 업데이트됨"
+    },
+    {
+      "name": "새 아이디어 모달 오픈/클로즈",
+      "steps": [
+        "</div>
+      <div class="muted" style="margin-top:0.8rem">강점</div>
+      <ul style="margin-top:0.35rem"><li>없음</li></ul>
+    </div>
+    <div class="card">
+      <div class="muted" style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">체크리스트</div>
+      <div style="margin-top:0.45rem"><div class="muted">체크리스트 없음</div></div>
+    </div>
+    <div class="card">
+      <div class="muted" style="font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase">이슈</div>
+      <ul style="margin-top:0.45rem"><li>없음</li></ul>
+    </div>
+    
+    
+</body>
+</html>
