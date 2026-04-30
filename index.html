@@ -1,0 +1,710 @@
+<html lang="ko" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IdeaForge - AI 아이디어 인큐베이팅</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { font-family: 'Inter', sans-serif; }
+  .gradient-text { background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .gradient-bg { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+  .gradient-border { border: 1px solid transparent; background-clip: padding-box; }
+  .card-hover { transition: all 0.3s ease; }
+  .card-hover:hover { transform: translateY(-2px); box-shadow: 0 20px 40px rgba(99,102,241,0.15); }
+  .sidebar-link { transition: all 0.2s ease; }
+  .sidebar-link:hover { background: rgba(99,102,241,0.15); }
+  .sidebar-link.active { background: rgba(99,102,241,0.2); border-left: 3px solid #6366f1; }
+  .kanban-card { cursor: grab; }
+  .kanban-card:active { cursor: grabbing; }
+  .toast { animation: slideIn 0.3s ease; }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .modal-overlay { animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .pulse-dot { animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .progress-bar { transition: width 1s ease; }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: #1e1e2e; }
+  ::-webkit-scrollbar-thumb { background: #4c4c6d; border-radius: 4px; }
+  .tag-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 9999px; font-size: 11px; font-weight: 500; }
+  .ai-shimmer { background: linear-gradient(90deg, #1e1e2e 25%, #2a2a3e 50%, #1e1e2e 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .star-rating span { cursor: pointer; transition: color 0.1s; }
+</style>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          dark: { 50: '#f8f8ff', 100: '#2a2a3e', 200: '#1e1e2e', 300: '#16162a', 400: '#12121f' }
+        }
+      }
+    }
+  }
+</script>
+</head>
+<body class="bg-[#12121f] text-gray-100 min-h-screen flex">
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-[#16162a] border-r border-gray-800 z-40 flex flex-col transition-transform duration-300 lg:translate-x-0 -translate-x-full">
+  <div class="p-6 border-b border-gray-800">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 gradient-bg rounded-xl flex items-center justify-center text-white font-bold text-lg">⚡</div>
+      <span class="text-xl font-bold gradient-text">IdeaForge</span>
+    </div>
+    <div class="mt-3 flex items-center gap-2">
+      <div class="w-2 h-2 bg-emerald-400 rounded-full pulse-dot"></div>
+      <span class="text-xs text-gray-400">AI 엔진 활성화됨</span>
+    </div>
+  </div>
+  <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+    <div class="text-xs text-gray-500 uppercase tracking-wider mb-3 px-3">메인 메뉴</div>
+    <a href="#" onclick="switchTab('dashboard')" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium" id="nav-dashboard">
+      <span class="text-lg">📊</span> 대시보드
+    </a>
+    <a href="#" onclick="switchTab('pipeline')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium" id="nav-pipeline">
+      <span class="text-lg">🚀</span> 파이프라인
+    </a>
+    <a href="#" onclick="switchTab('ai-analyzer')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium" id="nav-ai-analyzer">
+      <span class="text-lg">🤖</span> AI 분석기
+      <span class="ml-auto text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full">NEW</span>
+    </a>
+    <a href="#" onclick="switchTab('community')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium" id="nav-community">
+      <span class="text-lg">💬</span> 커뮤니티
+    </a>
+    <a href="#" onclick="switchTab('mentors')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium" id="nav-mentors">
+      <span class="text-lg">🎓</span> 멘토 매칭
+    </a>
+    <a href="#" onclick="switchTab('pitch')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium" id="nav-pitch">
+      <span class="text-lg">📑</span> 피치덱 생성
+    </a>
+    <div class="text-xs text-gray-500 uppercase tracking-wider mb-3 mt-5 px-3">설정</div>
+    <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+      <span class="text-lg">⚙️</span> 환경설정
+    </a>
+  </nav>
+  <div class="p-4 border-t border-gray-800">
+    <div class="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-xl p-3">
+      <div class="text-xs font-semibold text-indigo-300 mb-1">Free 플랜</div>
+      <div class="text-xs text-gray-400 mb-2">AI 분석 3/5회 사용</div>
+      <div class="w-full bg-gray-700 rounded-full h-1.5">
+        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-1.5 rounded-full" style="width:60%"></div>
+      </div>
+      <button class="mt-2 w-full text-xs gradient-bg text-white rounded-lg py-1.5 font-medium" onclick="showToast('💎 Pro 플랜 업그레이드 페이지로 이동합니다!', 'success')">Pro 업그레이드</button>
+    </div>
+    <div class="flex items-center gap-3 mt-3">
+      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" class="w-8 h-8 rounded-full bg-gray-700">
+      <div>
+        <div class="text-sm font-medium">김민준</div>
+        <div class="text-xs text-gray-400">Free Plan</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Mobile overlay -->
+<div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 lg:hidden hidden" onclick="toggleSidebar()"></div>
+
+<!-- Main Content -->
+<main class="lg:ml-64 flex-1 min-h-screen">
+  <!-- Top Bar -->
+  <header class="sticky top-0 bg-[#12121f]/80 backdrop-blur-xl border-b border-gray-800 z-20 px-4 lg:px-6 py-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg bg-gray-800 hover:bg-gray-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div class="relative hidden sm:block">
+          <input type="text" id="global-search" placeholder="아이디어, 멘토, 커뮤니티 검색..." class="bg-gray-800 border border-gray-700 rounded-xl pl-10 pr-4 py-2 text-sm w-64 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" oninput="handleSearch(this.value)">
+          <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="showNewIdeaModal()" class="gradient-bg text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <span>+</span> <span class="hidden sm:inline">새 아이디어</span>
+        </button>
+        <button class="relative p-2 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors" onclick="showToast('알림 3개가 있습니다', 'info')">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tab Contents -->
+  <!-- DASHBOARD -->
+  <div id="tab-dashboard" class="tab-content p-4 lg:p-6">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold">안녕하세요, 김민준님 👋</h1>
+      <p class="text-gray-400 mt-1 text-sm">오늘도 아이디어를 현실로 만들어가세요.</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="bg-[#1e1e2e] rounded-2xl p-4 border border-gray-800 card-hover">
+        <div class="flex items-center justify-between mb-2">
+          <div class="w-9 h-9 bg-indigo-500/20 rounded-xl flex items-center justify-center text-xl">💡</div>
+          <span class="text-xs text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">+2 이번주</span>
+        </div>
+        <div class="text-2xl font-bold mt-2">7</div>
+        <div class="text-xs text-gray-400">총 아이디어</div>
+      </div>
+      <div class="bg-[#1e1e2e] rounded-2xl p-4 border border-gray-800 card-hover">
+        <div class="flex items-center justify-between mb-2">
+          <div class="w-9 h-9 bg-purple-500/20 rounded-xl flex items-center justify-center text-xl">🔬</div>
+          <span class="text-xs text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">활성</span>
+        </div>
+        <div class="text-2xl font-bold mt-2">3</div>
+        <div class="text-xs text-gray-400">검증 진행중</div>
+      </div>
+      <div class="bg-[#1e1e2e] rounded-2xl p-4 border border-gray-800 card-hover">
+        <div class="flex items-center justify-between mb-2">
+          <div class="w-9 h-9 bg-pink-500/20 rounded-xl flex items-center justify-center text-xl">⭐</div>
+          <span class="text-xs text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded-full">+12 이번주</span>
+        </div>
+        <div class="text-2xl font-bold mt-2">48</div>
+        <div class="text-xs text-gray-400">피드백 수신</div>
+      </div>
+      <div class="bg-[#1e1e2e] rounded-2xl p-4 border border-gray-800 card-hover">
+        <div class="flex items-center justify-between mb-2">
+          <div class="w-9 h-9 bg-amber-500/20 rounded-xl flex items-center justify-center text-xl">🎓</div>
+          <span class="text-xs text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full">예약됨</span>
+        </div>
+        <div class="text-2xl font-bold mt-2">2</div>
+        <div class="text-xs text-gray-400">멘토 세션</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+      <!-- Chart -->
+      <div class="lg:col-span-2 bg-[#1e1e2e] rounded-2xl p-5 border border-gray-800">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-semibold">아이디어 진행 현황</h3>
+            <p class="text-xs text-gray-400">최근 8주 파이프라인 활동</p>
+          </div>
+          <select class="bg-gray-800 text-xs rounded-lg px-2 py-1 border border-gray-700 text-gray-300" onchange="showToast('기간 필터 적용됨', 'info')">
+            <option>8주</option>
+            <option>12주</option>
+            <option>6개월</option>
+          </select>
+        </div>
+        <canvas id="progressChart" height="200"></canvas>
+      </div>
+
+      <!-- Pipeline Overview -->
+      <div class="bg-[#1e1e2e] rounded-2xl p-5 border border-gray-800">
+        <h3 class="font-semibold mb-4">파이프라인 현황</h3>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-400 rounded-full"></span>Idea</span>
+              <span class="text-gray-400">3개</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2"><div class="bg-blue-400 h-2 rounded-full progress-bar" style="width:43%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 rounded-full"></span>Validate</span>
+              <span class="text-gray-400">2개</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2"><div class="bg-yellow-400 h-2 rounded-full progress-bar" style="width:29%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-400 rounded-full"></span>Build</span>
+              <span class="text-gray-400">1개</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2"><div class="bg-purple-400 h-2 rounded-full progress-bar" style="width:14%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="flex items-center gap-2"><span class="w-2 h-2 bg-emerald-400 rounded-full"></span>Pitch</span>
+              <span class="text-gray-400">1개</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2"><div class="bg-emerald-400 h-2 rounded-full progress-bar" style="width:14%"></div></div>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-gray-700">
+          <div class="text-xs text-gray-400 mb-2">평균 AI 점수</div>
+          <div class="flex items-center gap-2">
+            <div class="text-3xl font-bold gradient-text">78</div>
+            <div class="text-xs text-emerald-400">↑ 상위 15%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Ideas + Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="bg-[#1e1e2e] rounded-2xl p-5 border border-gray-800">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold">최근 아이디어</h3>
+          <button onclick="switchTab('pipeline')" class="text-xs text-indigo-400 hover:text-indigo-300">전체 보기 →</button>
+        </div>
+        <div class="space-y-3" id="recent-ideas">
+        </div>
+      </div>
+      <div class="bg-[#1e1e2e] rounded-2xl p-5 border border-gray-800">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold">최근 활동</h3>
+          <span class="text-xs text-gray-400">오늘</span>
+        </div>
+        <div class="space-y-3" id="activity-feed">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div id="tab-pipeline" class="tab-content hidden p-4 lg:p-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div>
+        <h1 class="text-2xl font-bold">파이프라인 보드</h1>
+        <p class="text-gray-400 text-sm mt-1">4단계 인큐베이팅 칸반 보드</p>
+      </div>
+      <button onclick="showNewIdeaModal()" class="gradient-bg text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
+        + 아이디어 추가
+      </button>
+    </div>
+
+    <!-- Kanban Board -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4" id="kanban-board">
+    </div>
+  </div>
+
+  <!-- AI ANALYZER -->
+  <div id="tab-ai-analyzer" class="tab-content hidden p-4 lg:p-6">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold flex items-center gap-2">🤖 AI 아이디어 분석기</h1>
+      <p class="text-gray-400 text-sm mt-1">GPT-4o 기반 시장 분석 · 경쟁사 매핑 · 린 캔버스 · SWOT 자동 생성</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Input -->
+      <div class="bg-[#1e1e2e] rounded-2xl p-6 border border-gray-800">
+        <h3 class="font-semibold mb-4">아이디어 입력</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="text-sm text-gray-400 mb-2 block">아이디어 제목</label>
+            <input type="text" id="ai-idea-title" placeholder="예: AI 기반 음식 영양소 추적 앱" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label class="text-sm text-gray-400 mb-2 block">아이디어 상세 설명</label>
+            <textarea id="ai-idea-desc" rows="5" placeholder="해결하려는 문제, 타겟 고객, 솔루션 아이디어를 상세히 작성해주세요..." class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-sm text-gray-400 mb-2 block">산업 분야</label>
+              <select id="ai-industry" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500">
+                <option>헬스테크</option>
+                <option>핀테크</option>
+                <option>에듀테크</option>
+                <option>커머스</option>
+                <option>SaaS B2B</option>
+                <option>AI/ML</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm text-gray-400 mb-2 block">타겟 시장</label>
+              <select id="ai-market" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500">
+                <option>국내 (한국)</option>
+                <option>아시아</option>
+                <option>글로벌</option>
+                <option>북미</option>
+              </select>
+            </div>
+          </div>
+          <button onclick="runAIAnalysis()" id="ai-analyze-btn" class="w-full gradient-bg text-white py-3 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+            <span>⚡</span> AI 분석 시작
+          </button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="ai-results" class="space-y-4">
+        <div class="bg-[#1e1e2e] rounded-2xl p-6 border border-gray-800 text-center py-16">
+          <div class="text-5xl mb-3">🔮</div>
+          <div class="text-gray-400 text-sm">아이디어를 입력하고 AI 분석을 시작하세요</div>
+          <div class="text-xs text-gray-500 mt-2">시장 규모 · 경쟁사 · 린캔버스 · SWOT 자동 생성</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sample Analysis History -->
+    <div class="mt-6 bg-[#1e1e2e] rounded-2xl p-5 border border-gray-800">
+      <h3 class="font-semibold mb-4">분석 히스토리</h3>
+      <div class="space-y-3" id="analysis-history"></div>
+    </div>
+  </div>
+
+  <!-- COMMUNITY -->
+  <div id="tab-community" class="tab-content hidden p-4 lg:p-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div>
+        <h1 class="text-2xl font-bold">커뮤니티 피드백 보드</h1>
+        <p class="text-gray-400 text-sm mt-1">창업자·멘토에게 구조화된 피드백을 받으세요</p>
+      </div>
+      <div class="flex gap-2">
+        <select id="community-filter" class="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-sm" onchange="filterCommunity(this.value)">
+          <option value="all">전체</option>
+          <option value="헬스테크">헬스테크</option>
+          <option value="핀테크">핀테크</option>
+          <option value="에듀테크">에듀테크</option>
+          <option value="SaaS">SaaS</option>
+        </select>
+        <button onclick="showShareModal()" class="gradient-bg text-white px-4 py-2 rounded-xl text-sm font-semibold">공유하기</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4" id="community-grid"></div>
+  </div>
+
+  <!-- MENTORS -->
+  <div id="tab-mentors" class="tab-content hidden p-4 lg:p-6">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold">멘토 매칭 마켓플레이스</h1>
+      <p class="text-gray-400 text-sm mt-1">도메인·경력 기반 전문 멘토와 1:1 세션을 예약하세요</p>
+    </div>
+
+    <div class="flex flex-wrap gap-2 mb-5" id="mentor-filters">
+      <button onclick="filterMentors('all')" class="mentor-filter-btn active px-4 py-2 rounded-xl text-sm font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">전체</button>
+      <button onclick="filterMentors('핀테크')" class="mentor-filter-btn px-4 py-2 rounded-xl text-sm font-medium bg-gray-800 text-gray-300 border border-gray-700">핀테크</button>
+      <button onclick="filterMentors('헬스테크')" class="mentor-filter-btn px-4 py-2 rounded-xl text-sm font-medium bg-gray-800 text-gray-300 border border-gray-700">헬스테크</button>
+      <button onclick="filterMentors('SaaS')" class="mentor-filter-btn px-4 py-2 rounded-xl text-sm font-medium bg-gray-800 text-gray-300 border border-gray-700">SaaS</button>
+      <button onclick="filterMentors('AI/ML')" class="mentor-filter-btn px-4 py-2 rounded-xl text-sm font-medium bg-gray-800 text-gray-300 border border-gray-700">AI/ML</button>
+      <button onclick="filterMentors('마케팅')" class="mentor-filter-btn px-4 py-2 rounded-xl text-sm font-medium bg-gray-800 text-gray-300 border border-gray-700">마케팅</button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" id="mentor-grid"></div>
+  </div>
+
+  <!-- PITCH -->
+  <div id="tab-pitch" class="tab-content hidden p-4 lg:p-6">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold">투자자 Pitch Deck 생성기</h1>
+      <p class="text-gray-400 text-sm mt-1">파이프라인 데이터 기반 10장 슬라이드 자동 생성</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Form -->
+      <div class="lg:col-span-1 space-y-4">
+        <div class="bg-[#1e1e2e] rounded-2xl p-5 border border-gray-800">
+          <h3 class="font-semibold mb-4">피치덱 설정</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="text-sm text-gray-400 mb-1 block">아이디어 선택</label>
+              <select id="pitch-idea-select" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-sm">
+                <option>AI 헬스케어 코치</option>
+                <option>블록체인 공급망</option>
+                <option>에듀테크 플랫폼</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm text-gray-400 mb-1 block">투자 유치 목표</label>
+              <input type="text" placeholder="예: 시드 5억원" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="text-sm text-gray-400 mb-1 block">슬라이드 스타일</label>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="border border-indigo-500 bg-indigo-500/10 rounded-xl p-2 text-center text-xs cursor-pointer">다크 프로</div>
+                <div class="border border-gray-700 bg-gray-800 rounded-xl p-2 text-center text-xs cursor-pointer text-gray-400">미니멀</div>
+              </div>
+            </div>
+            <button onclick="generatePitchDeck()" class="w-full gradient-bg text-white py-3 rounded-xl font-semibold text-sm">
+              ✨ 피치덱 생성
+            </button>
+          </div>
+        </div>
+
+        <!-- Slide List -->
+        <div class="bg-[#1e1e2e] rounded-2xl p-5 border border-gray-800">
+          <h3 class="font-semibold mb-3">슬라이드 목록</h3>
+          <div class="space-y-2" id="slide-list">
+            <div class="flex items-center gap-3 p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20 cursor-pointer" onclick="showSlide(0)">
+              <span class="text-xs text-indigo-400 w-5 text-center font-bold">1</span>
+              <span class="text-sm">표지 / 비전</span>
+              <span class="ml-auto text-xs text-emerald-400">✓</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer" onclick="showSlide(1)">
+              <span class="text-xs text-gray-400 w-5 text-center">2</span>
+              <span class="text-sm text-gray-300">문제 정의</span>
+              <span class="ml-auto text-xs text-emerald-400">✓</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer" onclick="showSlide(2)">
+              <span class="text-xs text-gray-400 w-5 text-center">3</span>
+              <span class="text-sm text-gray-300">솔루션</span>
+              <span class="ml-auto text-xs text-emerald-400">✓</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer" onclick="showSlide(3)">
+              <span class="text-xs text-gray-400 w-5 text-center">4</span>
+              <span class="text-sm text-gray-300">시장 규모</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer" onclick="showSlide(4)">
+              <span class="text-xs text-gray-400 w-5 text-center">5</span>
+              <span class="text-sm text-gray-300">비즈니스 모델</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer" onclick="showSlide(5)">
+              <span class="text-xs text-gray-400 w-5 text-center">6</span>
+              <span class="text-sm text-gray-300">경쟁사 분석</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer" onclick="showSlide(6)">
+              <span class="text-xs text-gray-400 w-5 text-center">7</span>
+              <span class="text-sm text-gray-300">트랙션</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer" onclick="showSlide(7)">
+              <span class="text-xs text-gray-400 w-5 text-center">8</span>
+              <span class="text-sm text-gray-300">팀 소개</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer" onclick="showSlide(8)">
+              <span class="text-xs text-gray-400 w-5 text-center">9</span>
+              <span class="text-sm text-gray-300">로드맵</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer" onclick="showSlide(9)">
+              <span class="text-xs text-gray-400 w-5 text-center">10</span>
+              <span class="text-sm text-gray-300">투자 요청</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide Preview -->
+      <div class="lg:col-span-2">
+        <div class="bg-[#1e1e2e] rounded-2xl border border-gray-800 overflow-hidden">
+          <div class="flex items-center justify-between px-5 py-3 border-b border-gray-800">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-red-500"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+              <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            </div>
+            <span class="text-xs text-gray-400">슬라이드 미리보기</span>
+            <button onclick="showToast('📄 PDF 다운로드가 시작됩니다!', 'success')" class="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-lg transition-colors">PDF 내보내기</button>
+          </div>
+          <div id="slide-preview" class="aspect-video relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex flex-col items-center justify-center p-10 text-center">
+              <div class="text-6xl mb-4">⚡</div>
+              <h2 class="text-3xl font-bold text-white mb-2">AI 헬스케어 코치</h2>
+              <p class="text-indigo-200 text-lg mb-6">AI로 누구나 개인 맞춤 헬스케어를</p>
+              <div class="text-sm text-indigo-300">Seed Round · ₩5억 투자 유치</div>
+            </div>
+          </div>
+          <div class="flex items-center justify-center gap-4 p-4 border-t border-gray-800">
+            <button onclick="prevSlide()" class="px-4 py-2 bg-gray-800 rounded-lg text-sm hover:bg-gray-700 transition-colors">← 이전</button>
+            <span class="text-sm text-gray-400" id="slide-indicator">1 / 10</span>
+            <button onclick="nextSlide()" class="px-4 py-2 bg-gray-800 rounded-lg text-sm hover:bg-gray-700 transition-colors">다음 →</button>
+          </div>
+        </div>
+
+        <!-- Pitch Score -->
+        <div class="mt-4 bg-[#1e1e2e] rounded-2xl p-5 border border-gray-800">
+          <h3 class="font-semibold mb-3">AI 피치 점수</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="text-center bg-gray-800 rounded-xl p-3">
+              <div class="text-2xl font-bold text-emerald-400">82</div>
+              <div class="text-xs text-gray-400 mt-1">스토리텔링</div>
+            </div>
+            <div class="text-center bg-gray-800 rounded-xl p-3">
+              <div class="text-2xl font-bold text-blue-400">75</div>
+              <div class="text-xs text-gray-400 mt-1">시장 분석</div>
+            </div>
+            <div class="text-center bg-gray-800 rounded-xl p-3">
+              <div class="text-2xl font-bold text-purple-400">88</div>
+              <div class="text-xs text-gray-400 mt-1">팀 구성</div>
+            </div>
+            <div class="text-center bg-gray-800 rounded-xl p-3">
+              <div class="text-2xl font-bold text-amber-400">70</div>
+              <div class="text-xs text-gray-400 mt-1">재무 계획</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Toast Container -->
+<div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
+
+<!-- New Idea Modal -->
+<div id="new-idea-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-overlay">
+  <div class="bg-[#1e1e2e] rounded-2xl border border-gray-700 w-full max-w-lg p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-xl font-bold">💡 새 아이디어 추가</h2>
+      <button onclick="closeModal('new-idea-modal')" class="text-gray-400 hover:text-white">✕</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="text-sm text-gray-400 mb-1 block">아이디어 제목 *</label>
+        <input type="text" id="new-idea-title" placeholder="한 줄로 아이디어를 표현하세요" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500">
+      </div>
+      <div>
+        <label class="text-sm text-gray-400 mb-1 block">설명</label>
+        <textarea id="new-idea-desc" rows="3" placeholder="문제, 솔루션, 타겟을 간략히..." class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 resize-none"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-sm text-gray-400 mb-1 block">카테고리</label>
+          <select id="new-idea-category" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-sm">
+            <option>헬스테크</option>
+            <option>핀테크</option>
+            <option>에듀테크</option>
+            <option>SaaS</option>
+            <option>커머스</option>
+            <option>AI/ML</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-sm text-gray-400 mb-1 block">시작 단계</label>
+          <select id="new-idea-stage" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-sm">
+            <option value="idea">Idea</option>
+            <option value="validate">Validate</option>
+            <option value="build">Build</option>
+            <option value="pitch">Pitch</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="closeModal('new-idea-modal')" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl text-sm font-medium transition-colors">취소</button>
+        <button onclick="addNewIdea()" class="flex-1 gradient-bg text-white py-3 rounded-xl text-sm font-semibold">추가하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Feedback Modal -->
+<div id="feedback-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-overlay">
+  <div class="bg-[#1e1e2e] rounded-2xl border border-gray-700 w-full max-w-lg p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-xl font-bold" id="feedback-modal-title">피드백 작성</h2>
+      <button onclick="closeModal('feedback-modal')" class="text-gray-400 hover:text-white">✕</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="text-sm text-gray-400 mb-2 block">종합 점수</label>
+        <div class="flex gap-2 star-rating" id="star-rating">
+          <span onclick="setRating(1)" class="text-3xl text-gray-600 hover:text-yellow-400" data-star="1">★</span>
+          <span onclick="setRating(2)" class="text-3xl text-gray-600 hover:text-yellow-400" data-star="2">★</span>
+          <span onclick="setRating(3)" class="text-3xl text-yellow-400" data-star="3">★</span>
+          <span onclick="setRating(4)" class="text-3xl text-gray-600 hover:text-yellow-400" data-star="4">★</span>
+          <span onclick="setRating(5)" class="text-3xl text-gray-600 hover:text-yellow-400" data-star="5">★</span>
+        </div>
+      </div>
+      <div>
+        <label class="text-sm text-gray-400 mb-1 block">강점</label>
+        <input type="text" id="feedback-strength" placeholder="이 아이디어의 가장 강한 점은..." class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500">
+      </div>
+      <div>
+        <label class="text-sm text-gray-400 mb-1 block">개선점</label>
+        <input type="text" id="feedback-improvement" placeholder="보완이 필요한 부분은..." class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500">
+      </div>
+      <div>
+        <label class="text-sm text-gray-400 mb-1 block">코멘트</label>
+        <textarea id="feedback-comment" rows="3" placeholder="추가 의견을 자유롭게..." class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 resize-none"></textarea>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="closeModal('feedback-modal')" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl text-sm font-medium">취소</button>
+        <button onclick="submitFeedback()" class="flex-1 gradient-bg text-white py-3 rounded-xl text-sm font-semibold">피드백 제출</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mentor Booking Modal -->
+<div id="mentor-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-overlay">
+  <div class="bg-[#1e1e2e] rounded-2xl border border-gray-700 w-full max-w-md p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-xl font-bold">📅 멘토 세션 예약</h2>
+      <button onclick="closeModal('mentor-modal')" class="text-gray-400 hover:text-white">✕</button>
+    </div>
+    <div id="mentor-modal-content"></div>
+    <div class="space-y-3 mt-4">
+      <div>
+        <label class="text-sm text-gray-400 mb-1 block">선호 날짜</label>
+        <input type="date" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500">
+      </div>
+      <div>
+        <label class="text-sm text-gray-400 mb-1 block">세션 주제</label>
+        <select class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-sm">
+          <option>아이디어 검증</option>
+          <option>비즈니스 모델</option>
+          <option>투자 유치 전략</option>
+          <option>기술 아키텍처</option>
+          <option>마케팅 전략</option>
+        </select>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="closeModal('mentor-modal')" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl text-sm font-medium">취소</button>
+        <button onclick="bookMentor()" class="flex-1 gradient-bg text-white py-3 rounded-xl text-sm font-semibold">예약 완료</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Idea Detail Modal -->
+<div id="idea-detail-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-overlay">
+  <div class="bg-[#1e1e2e] rounded-2xl border border-gray-700 w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-xl font-bold" id="idea-detail-title">아이디어 상세</h2>
+      <button onclick="closeModal('idea-detail-modal')" class="text-gray-400 hover:text-white">✕</button>
+    </div>
+    <div id="idea-detail-content"></div>
+  </div>
+</div>
+
+<!-- Share Modal -->
+<div id="share-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-overlay">
+  <div class="bg-[#1e1e2e] rounded-2xl border border-gray-700 w-full max-w-lg p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-xl font-bold">🌐 아이디어 공유</h2>
+      <button onclick="closeModal('share-modal')" class="text-gray-400 hover:text-white">✕</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="text-sm text-gray-400 mb-1 block">공유할 아이디어</label>
+        <select class="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-sm">
+          <option>AI 헬스케어 코치</option>
+          <option>에듀테크 플랫폼</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-sm text-gray-400 mb-2 block">공개 설정</label>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="border border-indigo-500 bg-indigo-500/10 rounded-xl p-3 cursor-pointer text-center">
+            <div class="text-xl mb-1">👤</div>
+            <div class="text-sm font-medium">실명 공개</div>
+            <div class="text-xs text-gray-400 mt-1">신뢰도 +20%</div>
+          </div>
+          <div class="border border-gray-700 bg-gray-800 rounded-xl p-3 cursor-pointer text-center">
+            <div class="text-xl mb-1">🎭</div>
+            <div class="text-sm font-medium text-gray-300">익명 공개</div>
+            <div class="text-xs text-gray-400 mt-1">프라이버시 보호</div>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="closeModal('share-modal')" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl text-sm font-medium">취소</button>
+        <button onclick="shareIdea()" class="flex-1 gradient-bg text-white py-3 rounded-xl text-sm font-semibold">공유하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const ideas = [
+  { id: 1, title: 'AI 헬스케어 코치', desc: 'AI가 사용자의 건강 데이터를 분석해 개인화된 헬스케어 플랜을 제공하는 앱', stage: 'pitch', category: '헬스테크', score: 87, bookmarked: true, liked: true, likes: 24, created: '2일 전', progress: 85, color: 'emerald' },
+  { id: 2, title: '블록체인 공급망 추적', desc: '식품 공급망의 투명성을 위한 블록체인 기반 추적 시스템', stage: 'build', category: '핀테크', score: 72, bookmarked: false, liked: false, likes: 12, created: '5일 전', progress: 60, color: 'purple' },
+  { id: 3, title: '에듀테크 AI 튜터', desc: '학생 수준에 맞는 맞춤형 학습 경험을 제공하는 AI 튜터링 플랫폼', stage: 'validate', category: '에듀테크', score: 78, bookmarked: true, liked: false, likes: 31, created: '1주 전', progress: 40, color: 'blue' },
+  { id: 4, title: 'SaaS 영업팀 자동화', desc: 'B2B 영업 파이프라인 전체를 자동화하는 CRM + AI 솔루션', stage: 'validate', category: 'SaaS', score: 81, bookmarked: false, liked: true, likes: 18, created: '1주 전', progress: 45, color: 'amber' },
+  { id: 5, title: '로컬 커머스 플랫폼', desc: '동네 소상공인과 주민을 연결하는 하이퍼로컬 커머스', stage: 'idea', category: '커머스', score: 65, bookmarked: false, liked: false, likes: 7, created: '2주 전', progress: 15, color: 'pink' },
+  { id: 6, title: 'AI 법률 보조 서비스', desc: '소상공인을 위한 AI 기반 법률 문서 작성 및 검토 서비스', stage: 'idea', category: 'AI/ML', score: 74, bookmarked: true, liked: false, likes: 15, created: '3일 전', progress: 20, color: 'cyan' },
+  { id: 7, title: '정신건강 커뮤니티 앱', desc: '익명 기반 정신건강 지원 및 전문가 연결 모바일 앱', stage: 'idea', category: '헬스테크', score: 69, bookmarked: false, liked: false, likes: 9, created: '4일 전', progress: 10, color: 'rose' },
+];
+
+const communityPosts = [
+  { id: 1, ideaId: 1, title: 'AI 헬스케어 코치', author: '이수진', avatar: 'Lily', category: '헬스테크', score: 4.5, feedbacks: 12, views: 234, excerpt: 'AI가 사용자 건강 데이터를 분석해 개인 맞춤 헬스케어를 제공합니다. 기존 앱과의 차별점은 예방 중심 접근법입니다.', tags: ['AI', '헬스', '예방의학'], timestamp: '2시간 전' },
+  { id: 2, ideaId: 3, title: '에듀테크 AI 튜터', author: '익명', avatar: 'Bob', category: '에듀테크', score: 3.8, feedbacks: 8, views: 156, excerpt: '학생 개인의 학습 패턴을 AI가 분석해 최적화된 커리큘럼을 실시간으로 조정합니다.', tags: ['교육', 'AI', '개인화'], timestamp: '5시간 전' },
+  { id: 3, title: '탄소 발자국 트래
